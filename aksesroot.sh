@@ -21,6 +21,8 @@ clear
 echo "======================================"
 echo " ❖ Detail VPS"
 echo "--------------------------------------"
+echo " Please save the following data!"
+echo "--------------------------------------"
 echo " IP Address : $(curl -Ls http://ipinfo.io/ip)"
 echo " Username   : root"
 echo " Password   : $pwe"
