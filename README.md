@@ -30,8 +30,6 @@ Atau dengan `curl`:
 curl -fsSLo root-access.sh https://raw.githubusercontent.com/dudul19/root-access/main/root-access.sh && bash root-access.sh
 ```
 
-> Perintah lama (`rut.sh`) masih bisa dipakai, otomatis diarahkan ke `root-access.sh`.
-
 ### Yang Dilakukan Script
 | Langkah | Keterangan |
 |---|---|
