@@ -13,7 +13,6 @@
 ### Keterangan
 - Script Bash untuk mengaktifkan login **root** dengan password dan mengganti password root VPS Linux secara otomatis.
 - Berguna untuk VPS baru dari *cloud provider* (Biznet, AWS, Google Cloud, Azure, Oracle, DigitalOcean, dll) yang secara *default* menonaktifkan login root.
-- Tampilan terminal 40 kolom (nyaman di HP: JuiceSSH / Termius), desain sama dengan Tomato Autoscript.
 
 ### Cara Pakai
 - Login sebagai root dulu (`sudo su`).
@@ -33,7 +32,7 @@ curl -fsSLo root-access.sh https://raw.githubusercontent.com/dudul19/root-access
 ### Yang Dilakukan Script
 | Langkah | Keterangan |
 |---|---|
-| 📥 sshd_config | Menimpa `/etc/ssh/sshd_config` dengan [`sshd_config`](sshd_config) dari repo ini (disengaja) |
+| 📥 sshd_config | Menimpa `/etc/ssh/sshd_config` dengan [`sshd_config`](sshd_config) dari repo ini |
 | 💾 Backup | Config lama disimpan ke `/etc/ssh/sshd_config.bak-<tanggal-jam>`, dikembalikan otomatis bila `sshd -t` gagal |
 | 🔌 Port SSH | `22` `2222` `3369` `2269` `169` `99` |
 | 🛡️ Firewall | Port dibuka otomatis di UFW / firewalld / SELinux bila aktif |
