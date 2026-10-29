@@ -2,20 +2,17 @@
 # root-access.sh — aktifkan login root + password di VPS.
 # Menimpa /etc/ssh/sshd_config dengan config dari repo ini (disengaja),
 # config lama dibackup dan dikembalikan bila `sshd -t` gagal.
-#
-# Tampilan memakai desain "Struk" Tomato Autoscript: maks 40 kolom (HP
-# potrait), rata kiri tanpa margin, warna truecolor.
 
 REPO="https://raw.githubusercontent.com/dudul19/root-access/main"
 CFG=/etc/ssh/sshd_config
 
-UI_T="\e[38;2;255;122;92m"    # #ff7a5c aksen tomat
-UI_G="\e[38;2;143;209;158m"   # #8fd19e
-UI_OK="\e[38;2;122;214;154m"  # #7ad69a ✓
-UI_D="\e[38;2;138;143;150m"   # #8a8f96 label
-UI_L="\e[38;2;58;63;69m"      # #3a3f45 garis
-UI_R="\e[38;2;255;107;107m"   # #ff6b6b error
-UI_Y="\e[38;2;232;193;112m"   # #e8c170 peringatan
+UI_T="\e[38;2;255;122;92m"    
+UI_G="\e[38;2;143;209;158m"  
+UI_OK="\e[38;2;122;214;154m" 
+UI_D="\e[38;2;138;143;150m"  
+UI_L="\e[38;2;58;63;69m"     
+UI_R="\e[38;2;255;107;107m"   
+UI_Y="\e[38;2;232;193;112m"   
 UI_N="\e[0m"
 UI_W=40
 
@@ -27,7 +24,7 @@ ui_line() {
 ui_hr()  { ui_line ┄; }
 ui_hr2() { ui_line ═; }
 
-ui_head() {   # "TOMATO / judul ······ info kanan" + ═
+ui_head() {  
     local LC_ALL=C.UTF-8 t="${1,,}" m="${2:-}" n
     n=$(( UI_W - 9 - ${#t} - ${#m} ))
     [ "$n" -lt 1 ] && n=1
@@ -39,7 +36,7 @@ ui_head() {   # "TOMATO / judul ······ info kanan" + ═
     ui_hr2
 }
 
-ui_lead() {   # "label ······ nilai" (nilai rata kanan di kolom 40)
+ui_lead() {
     local LC_ALL=C.UTF-8 k="$1" v="$2" n d
     n=$(( UI_W - ${#k} - ${#v} - 2 ))
     [ "$n" -lt 2 ] && n=2
@@ -47,11 +44,11 @@ ui_lead() {   # "label ······ nilai" (nilai rata kanan di kolom 40)
     printf "${UI_D}%s${UI_N} ${UI_L}%s${UI_N} %s\n" "$k" "${d// /·}" "$v"
 }
 
-ui_kv() {     # "Label      : nilai" (blok hasil, aman di-copy ke Telegram)
+ui_kv() { 
     printf "${UI_D}%-10s :${UI_N} %s\n" "$1" "$2"
 }
 
-ui_msg() {    # ikon + teks, dilipat 38 kolom dengan indentasi gantung
+ui_msg() {  
     local l first=1
     while IFS= read -r l; do
         if [ $first = 1 ]; then printf "%b %s\n" "$1" "$l"; first=0; else printf "  %s\n" "$l"; fi
@@ -65,7 +62,7 @@ ui_in()   { printf "${UI_T}›${UI_N} %s" "$1"; }
 
 fail() { ui_err "$1"; ui_hr2; echo; exit 1; }
 
-fetch() {     # fetch <url> <file>
+fetch() {  
     if command -v curl >/dev/null 2>&1; then
         curl -fsSL --max-time 30 "$1" -o "$2"
     else
@@ -94,8 +91,6 @@ os_name() {
 
 restart_ssh() {
     systemctl daemon-reload 2>/dev/null
-    # Ubuntu 22.10+ memakai socket activation: port dibaca generator dari
-    # sshd_config, jadi ssh.socket yang perlu direstart.
     if systemctl is-enabled ssh.socket >/dev/null 2>&1 || systemctl is-active ssh.socket >/dev/null 2>&1; then
         systemctl restart ssh.socket 2>/dev/null
         systemctl is-active ssh.service >/dev/null 2>&1 && systemctl restart ssh.service
@@ -105,7 +100,7 @@ restart_ssh() {
         || service ssh restart 2>/dev/null || service sshd restart 2>/dev/null
 }
 
-open_ports() {   # buka port di firewall/SELinux bila aktif (best effort)
+open_ports() {  
     local p
     if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
         for p in "${PORTS[@]}"; do ufw allow "$p/tcp" >/dev/null 2>&1; done
@@ -130,7 +125,6 @@ fi
 VPS_IP=$(public_ip)
 OS=$(os_name)
 
-# ── 1. Info + password ───────────────────────
 ui_head "ROOT ACCESS" "${VPS_IP}"
 ui_warn "This replaces /etc/ssh/sshd_config and enables root login with a password. The old config is backed up first."
 ui_hr
@@ -147,7 +141,6 @@ while :; do
     break
 done
 
-# ── 2. Proses ────────────────────────────────
 clear
 ui_head "ROOT ACCESS" "setup"
 
@@ -157,7 +150,6 @@ fetch "$REPO/sshd_config" "$TMP" && grep -q '^PermitRootLogin yes' "$TMP" \
     || fail "Cannot download sshd_config. Nothing was changed."
 ui_ok "sshd_config downloaded"
 
-# Path sftp-server beda per distro (Debian/Ubuntu vs RHEL/Arch).
 SFTP=internal-sftp
 for f in /usr/lib/openssh/sftp-server /usr/libexec/openssh/sftp-server /usr/lib/ssh/sftp-server; do
     [ -x "$f" ] && { SFTP=$f; break; }
@@ -189,7 +181,6 @@ ui_ok "root password set"
 ui_hr2
 sleep 1
 
-# ── 3. Hasil (blok 27 kolom, aman di-copy ke Telegram) ──
 clear
 UI_HRW=27
 printf "${UI_T}root access${UI_N}\n"
